@@ -1,7 +1,10 @@
+import _ from 'lodash';
+
 class MongoContainer {
 
-    constructor(model) {
+    constructor(model, productModel) {
         this.model = model;
+        this.productModel = productModel;
     };
 
     async create(data) {
@@ -48,6 +51,38 @@ class MongoContainer {
                 data = 'Cart not found';
             }
             return data;
+        }catch(err){
+            throw new Error(err);
+        }
+    };
+
+    async addProduct(uuidCart, uuidProduct) {
+        try{
+            const product = await this.productModel.findOne({uuid: uuidProduct});
+            if(_.isNil(product)){
+                return null
+            }
+            await this.model.updateOne({uuid: uuidCart}, {$push: {products: product}});
+            const cartUpdated = await this.getOne(uuidCart);
+            return cartUpdated;
+        }catch(err){
+            throw new Error(err);
+        }
+    };
+
+    async deleteProduct(uuidCart, uuidProduct) {
+        try{
+            const product = await this.productModel.findOne({uuid: uuidProduct});
+            if(_.isNil(product)){
+                return null
+            }
+            const updated = await this.model.updateOne({uuid: uuidCart}, {$pull: {products: product}});
+            if(updated.modifiedCount === 0){
+                return 'Product not found'
+            }
+            console.log(updated)
+            const cartUpdated = await this.getOne(uuidCart);
+            return cartUpdated;
         }catch(err){
             throw new Error(err);
         }

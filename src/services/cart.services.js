@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const DaoService = await (
-  await import(`../daos/product/${process.env.DATACORE}.product.dao.js`)
+  await import(`../daos/cart/${process.env.DATACORE}.cart.dao.js`)
 ).default 
   
 class CartServices { 
@@ -29,6 +29,16 @@ class CartServices {
         const carts = await this.dao.delete(uuid);
         return carts;
     };
+
+    async addProduct(uuidCart, uuidProduct) {
+        const cart = await this.dao.addProduct(uuidCart, uuidProduct);
+        return cart;
+    };
+
+    async deleteProduct(uuidCart, uuidProduct) {
+        const cart = await this.dao.deleteProduct(uuidCart, uuidProduct);
+        return cart;
+    }
 };
 
 export default new CartServices();

@@ -3,7 +3,9 @@ import {
   createCart,
   getCarts,
   getCart,
-  deleteCart
+  deleteCart,
+  addProduct,
+  deleteProduct
 } from '../../controllers/cart.controllers.js';
 
 const router = Router();
@@ -12,5 +14,7 @@ router
 .get('/', getCarts)
 .get('/:uuid', getCart)
 .delete('/:uuid', deleteCart)
+.post('/:uuidCart/:uuidProduct', addProduct)
+.delete('/:uuidCart/:uuidProduct', deleteProduct)
 
 export default router;
