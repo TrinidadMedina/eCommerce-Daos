@@ -1,8 +1,9 @@
-/* const DaoService = await (
-  await import(`../daos/product/${process.env.DATACORE}.product.dao.js`)
-).default */
+import dotenv from 'dotenv';
+dotenv.config();
 
-const DaoService = await (await import(`../daos/product/memory.product.dao.js`)).default
+const DaoService = await (
+  await import(`../daos/product/${process.env.DATACORE}.product.dao.js`)
+).default 
 
 class ProductServices {
 

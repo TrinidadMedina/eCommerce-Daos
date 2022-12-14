@@ -23,7 +23,7 @@ const connect = async () => {
     }
 };
 
-//connect();
+connect();
 
 
 app.use(errorHandler);
