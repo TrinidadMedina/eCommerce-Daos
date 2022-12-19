@@ -26,8 +26,8 @@ class CartServices {
     };
 
     async deleteCart(uuid) {
-        const carts = await this.dao.delete(uuid);
-        return carts;
+        const cart = await this.dao.delete(uuid);
+        return cart;
     };
 
     async addProduct(uuidCart, uuidProduct) {

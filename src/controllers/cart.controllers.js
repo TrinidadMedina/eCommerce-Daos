@@ -16,7 +16,7 @@ export const createCart = async (req, res, next)=>{
         }else{
             Object.assign(body, {
                 uuid: uuidv4(),
-                products: []  
+                products: [], 
             });
             const data = await cartServices.createCart(body);
             const dataDto = new CartDto(data);
@@ -70,7 +70,7 @@ export const deleteCart = async (req, res, next)=>{
         const data = await cartServices.deleteCart(uuid);
         if(!admin){
             res.status(400).json({ error: -1, message: `Route ${req.baseUrl} method ${req.method} Not authorized` })
-        }else if(typeof data === 'string'){
+        }else if(_.isNil(data)){
             res.status(400).json({
                 Success: false, 
                 data: 'Cart not found'
@@ -94,10 +94,10 @@ export const addProduct = async (req, res, next)=>{
             res.status(400).json({ error: -1, message: `Route ${req.baseUrl} method ${req.method} Not authorized` })
         }else{
             const data = await cartServices.addProduct(uuidCart, uuidProduct);
-            if(_.isNil(data)){
+            if(typeof data === 'string'){
                 res.status(400).json({
                     success: false, 
-                    data: 'Cart not found'
+                    data: data
                 })
             }else{
                 const dataDto = new CartDto(data);
@@ -120,17 +120,12 @@ export const deleteProduct = async (req, res, next)=>{
             res.status(400).json({ error: -1, message: `Route ${req.baseUrl} method ${req.method} Not authorized` })
         }else{
             const data = await cartServices.deleteProduct(uuidCart, uuidProduct);
-            if(_.isNil(data)){
-                res.status(400).json({
-                    success: false, 
-                    data: 'Cart not found'
-                })
-            }else if (typeof data === 'string') {
+            if(typeof data === 'string'){
                 res.status(400).json({
                     success: false, 
                     data: data
                 })
-            }else{
+            }else {
                 const dataDto = new CartDto(data);
                 res.status(200).json({
                     succes: true,

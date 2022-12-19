@@ -2,7 +2,16 @@
   {
     "name": "Navidad",
     "uuid": "8da3337f-6a35-47df-94f9-602028a1ef2b",
-    "products": [],
+    "products": [
+      {
+        "name": "plátano",
+        "description": "fruta amarilla",
+        "image": "http://image",
+        "price": 1000,
+        "stock": 33,
+        "uuid": "aa89a7b9-e126-4af1-9da7-7f07347f646c"
+      }
+    ],
     "timestamp": 1670944698633
   }
 ]

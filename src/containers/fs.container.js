@@ -9,7 +9,6 @@ class FsContainer {
 
     constructor(filename) {
         this.path = (path.join(__dirname, '/', filename));
-        console.log(this.path)
     };
 
     async create(data){
@@ -38,10 +37,7 @@ class FsContainer {
         try{
             const items = await this.getAll();
             const item = items.filter(i => i.uuid == uuid);
-            if(item.length === 0){
-                return null
-            };
-            return item[0];
+            return item.length === 0 ? null : item[0];
         }catch(err){
             throw new Error(err);
         }
@@ -69,8 +65,7 @@ class FsContainer {
                 return i;
             });
             await fs.promises.writeFile(this.path, JSON.stringify(newList, null, 2)); 
-            const result = await this.getOne(uuid);
-            return result;
+            return await this.getOne(uuid);
         }catch(err){
             throw new Error(err);
         }
@@ -80,15 +75,64 @@ class FsContainer {
         try{
             const items = await this.getAll();
             const newItems = items.filter(i => i.uuid != uuid);
-            if(items.length === newItems.length){
-                return 'Item not found';
-            } 
-            const data = await fs.promises.writeFile(this.path, JSON.stringify(newItems, null, 2)); 
-            return data;
+            return items.length === newItems.length ? null : await fs.promises.writeFile(this.path, JSON.stringify(newItems, null, 2)); 
         }catch(err){
             throw new Error(err);
         }
     };
+
+    async addProduct(uuidCart, uuidProduct){
+        try{
+            const carts = await this.getAll();
+            const products = JSON.parse(await fs.promises.readFile(path.join(__dirname, '/products.json')));
+            const selectedCart = carts.find(i => i.uuid === uuidCart);
+            const selectedProduct = products.find(i => i.uuid === uuidProduct);
+            if (selectedCart === undefined){
+                return 'Cart not found'
+            }
+            if (selectedProduct === undefined){
+                return 'Product not found'
+            }
+            const newList = await carts.map(i => {
+                if(i.uuid === uuidCart){
+                    i.products.push(selectedProduct)
+                }
+                return i;
+            });
+            await fs.promises.writeFile(this.path, JSON.stringify(newList, null, 2));
+            return await this.getOne(uuidCart);
+        }catch(err){
+            throw new Error(err);
+        }
+    };
+
+    async deleteProduct(uuidCart, uuidProduct){
+        try{
+            const carts = await this.getAll();
+            const products = JSON.parse(await fs.promises.readFile(path.join(__dirname, '/products.json')));
+            const selectedCart = carts.find(i => i.uuid === uuidCart);
+            const selectedProduct = await products.find(i => i.uuid === uuidProduct);
+    
+            if (selectedCart === undefined){
+                return 'Cart not found'
+            }
+            if (selectedProduct === undefined){
+                return 'Product not found'
+            }
+    
+            const newList = await carts.map(i => {
+                if(i.uuid === uuidCart){
+                   i.products = i.products.filter(j => j.uuid !== uuidProduct);
+                }
+                return i;
+            });  
+    
+            await fs.promises.writeFile(this.path, JSON.stringify(newList, null, 2));
+            return await this.getOne(uuidCart);
+            }catch(err){
+                throw new Error(err);
+            }
+        };
 };
 
 export default FsContainer;

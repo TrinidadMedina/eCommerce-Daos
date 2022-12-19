@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 class MemoryContainer {
   constructor() {
     this.array = [];
@@ -24,10 +26,7 @@ class MemoryContainer {
   async getOne(uuid) {
     try{
         const item = this.array.filter(i => i.uuid == uuid);
-        if(item.length === 0){
-            return null
-        };
-        return item[0];
+        return item.length === 0 ? null : item[0];
     }catch(err){
         throw new Error(err.message);
     }
@@ -51,7 +50,7 @@ class MemoryContainer {
     try{
         const newArray = this.array.filter(i => i.uuid !== uuid);
         if(newArray.length === this.array.length){
-            return 'Item not found';
+            return null;
         };
         this.array = newArray;
         return {}; 

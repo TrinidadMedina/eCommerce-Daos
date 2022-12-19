@@ -101,7 +101,7 @@ export const deleteProduct = async (req, res, next) => {
         const data = await productService.deleteProduct(uuid);
         if(!admin){
             res.status(400).json({ error: -1, message: `route ${req.baseUrl} method ${req.method} Not authorized` })
-        } else if(typeof data === 'string'){
+        } else if(_.isNil(data)){
             res.status(400).json({
                 Success: false, 
                 data: 'Product not found'

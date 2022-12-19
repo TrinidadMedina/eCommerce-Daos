@@ -9,8 +9,7 @@ class MongoContainer {
 
     async create(data) {
         try{
-            const newItem = await this.model.create(data);
-            return newItem;
+            return await this.model.create(data);
         }catch(err){
             throw new Error(err.message);
         }
@@ -18,8 +17,7 @@ class MongoContainer {
 
     async getAll() {
         try{
-            const data = await this.model.find();
-            return data;
+            return await this.model.find();
         }catch(err){
             throw new Error(err.message);
         }   
@@ -27,8 +25,7 @@ class MongoContainer {
 
     async getOne(uuid) {
         try{
-            const data = await this.model.findOne({uuid: uuid});
-            return data;
+            return await this.model.findOne({uuid: uuid});
         }catch(err){
             throw new Error(err);
         }
@@ -37,8 +34,7 @@ class MongoContainer {
     async update(uuid, body) {
         try{
             await this.model.updateOne({uuid: uuid}, {$set: {name: body.name, description: body.description, image:body.image, price: body.price, stock: body.stock}});
-            const productUpdated = await this.getOne(uuid);
-            return productUpdated;
+            return await this.getOne(uuid);
         }catch(err){
             throw new Error(err);
         }
@@ -47,10 +43,7 @@ class MongoContainer {
     async delete(uuid) {
         try{
             let data = await this.model.deleteOne({uuid: uuid});
-            if(!data.deletedCount){
-                data = 'Cart not found';
-            }
-            return data;
+            return data.deletedCount === 0 ? null : data;
         }catch(err){
             throw new Error(err);
         }
@@ -60,11 +53,11 @@ class MongoContainer {
         try{
             const product = await this.productModel.findOne({uuid: uuidProduct});
             if(_.isNil(product)){
-                return null
+                return 'Product not found'
             }
             await this.model.updateOne({uuid: uuidCart}, {$push: {products: product}});
-            const cartUpdated = await this.getOne(uuidCart);
-            return cartUpdated;
+            const updated = await this.getOne(uuidCart);
+            return _.isNil(updated) ? 'Cart not found' : updated;
         }catch(err){
             throw new Error(err);
         }
@@ -74,15 +67,11 @@ class MongoContainer {
         try{
             const product = await this.productModel.findOne({uuid: uuidProduct});
             if(_.isNil(product)){
-                return null
-            }
-            const updated = await this.model.updateOne({uuid: uuidCart}, {$pull: {products: product}});
-            if(updated.modifiedCount === 0){
                 return 'Product not found'
             }
-            console.log(updated)
-            const cartUpdated = await this.getOne(uuidCart);
-            return cartUpdated;
+            await this.model.updateOne({uuid: uuidCart}, {$pull: {products: product}});
+            const updated = await this.getOne(uuidCart);
+            return _.isNil(updated) ? 'Cart not found' : updated;
         }catch(err){
             throw new Error(err);
         }
